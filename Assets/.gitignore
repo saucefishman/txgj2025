@@ -1,0 +1,22 @@
+    # Unity generated
+    Library/
+    Temp/
+    Obj/
+    Build/
+    Builds/
+    Logs/
+
+    # Visual Studio
+    .vs/
+    *.csproj
+    *.sln
+
+    # Rider
+    .idea/
+
+    # Mac
+    .DS_Store
+
+    # Packages
+    Packages/manifest.json
+    Packages/packages-lock.json
