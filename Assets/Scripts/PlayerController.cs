@@ -8,17 +8,24 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f; // max horizontal speed
     public float xGroundAccel = 10f; // max horizontal acceleration on ground
     public float xAirAccel = 5f; // max horizontal acceleration in air
-    public float jumpForce = 14f; // initial jump force
+    
+    public float baseGravity = 5f; // base gravity scale
     public float additionalJumpVelocity = 10f; // fixed minimum velocity while jump is held
     public float jumpTime = 0.5f; // max time the jump can be held
     public float preLandBufferTime = 0.1f; // time before landing to allow jump input
-    public float baseGravity = 5f; // base gravity scale
-    public Vector2 wallJumpForce = new Vector2(10f, 14f); // force applied when wall jumping
     public float foxJumpTimeAllowance = 0.1f; // time after leaving ground or wall to allow jump input
+    public Vector2 wallJumpForce = new Vector2(10f, 14f); // force applied when wall jumping
+    public float jumpForce = 14f; // initial jump force
+    public float postJumpWallAttachDelay = 0.2f; // time after jumping to ignore wall attach attempts
+    
     public float dashAcceleration = 500f; // horizontal acceleration during dash
     public float dashSpeed = 20f; // max horizontal speed during dash
     public float dashDuration = 0.3f; // duration of dash
-    public float postJumpWallAttachDelay = 0.2f; // time after jumping to ignore wall attach attempts
+    public float dashCooldown = 0.5f; // Time after dashing before dash can be used again
+    
+    public float baseLifetime = 60.0f;
+
+    public OverlayController overlayController; // reference to overlay UI's controller
 
     private Direction lastDirection; // Direction player character is facing. Not necessarily aligned with input.
 
@@ -32,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private Timer wallFoxJumpTimer; // Tracks for jump input after leaving wall
 
     private Timer dashTimer; // Tracks dash duration
+    private Timer dashCooldownTimer;
     private bool dashUsed;
     private Direction dashDirection;
 
@@ -39,6 +47,8 @@ public class PlayerController : MonoBehaviour
 
     private bool onWall;
     private Direction lastWallSide;
+
+    private Timer lifeTimer;
 
     private Rigidbody2D rb;
     private Collider2D coll;
@@ -79,6 +89,9 @@ public class PlayerController : MonoBehaviour
         wallFoxJumpTimer = new Timer(foxJumpTimeAllowance);
         dashTimer = new Timer(dashDuration);
         postJumpWallAttachTimer = new Timer(postJumpWallAttachDelay);
+        dashCooldownTimer = new Timer(dashCooldown);
+        lifeTimer = new Timer(baseLifetime, addToRegistry:false);
+        lifeTimer.restart();
     }
 
     // TODO: This method is 110 lines long consider killing yourself lmao?
@@ -157,7 +170,7 @@ public class PlayerController : MonoBehaviour
 
         if (dashTapped)
         {
-            if (!dashUsed && dashTimer.isFinished())
+            if (!dashUsed && dashTimer.isFinished() && dashCooldownTimer.isFinished())
             {
                 dashDirection = lastDirection;
                 dashTimer.restart();
@@ -182,9 +195,12 @@ public class PlayerController : MonoBehaviour
         {
             var newXVel = Mathf.Clamp(rb.linearVelocity.x, -moveSpeed, moveSpeed);
             rb.linearVelocity = new Vector2(newXVel, rb.linearVelocity.y);
+            dashCooldownTimer.restart();
         }
 
-        Timer.tickAll();
+        overlayController.setHealth(lifeTimer.getTimeRemaining() / baseLifetime);
+
+        Timer.tickRegistered();
     }
 
     public void onEnterGround()
@@ -206,12 +222,11 @@ public class PlayerController : MonoBehaviour
         groundFoxJumpTimer.restart();
     }
 
-    /**
-     * Called when the player first touches a wall.
-     *
-     * @param wallDirection The direction the wall is in relative to the player.
-     * @param wallCollider The collider of the wall the player touched.
-     */
+    /// <summary>
+    /// Called when the player first touches a wall.
+    /// </summary>
+    /// <param name="wallDirection">The direction the wall is in relative to the player.</param>
+    /// <param name="wallCollider">The collider of the wall the player touched.</param>
     public void onEnterWall(Direction wallDirection, Collider2D wallCollider)
     {
         // There is an intent to stick to the wall if the player is pushing towards it
@@ -268,5 +283,21 @@ public class PlayerController : MonoBehaviour
         onWall = false;
         rb.gravityScale = baseGravity;
         wallFoxJumpTimer.restart();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("HealthPack"))
+        {
+            var hp = other.GetComponent<HealthPack>();
+            if (hp == null)
+            {
+                Debug.LogWarning("HealthPack object not found");
+                return;
+            }
+
+            var amount = hp.consumeAndGetAmount();
+            lifeTimer.setTimeRemaining(Math.Min(lifeTimer.getTimeRemaining() + amount, baseLifetime));
+        }
     }
 }

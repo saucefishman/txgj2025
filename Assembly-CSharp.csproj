@@ -52,8 +52,11 @@
     <Compile Include="Assets/Scripts/PlayerControls.cs" />
     <Compile Include="Assets/Scripts/GroundCheck.cs" />
     <Compile Include="Assets/Scripts/CameraFollower.cs" />
-    <Compile Include="Assets/Scripts/Wall.cs" />
+    <Compile Include="Assets/Scripts/OverlayController.cs" />
+    <Compile Include="Assets/HealthPack.cs" />
     <Compile Include="Assets/Scripts/Direction.cs" />
+    <None Include="Assets/OverlayStyles.uss" />
+    <None Include="Assets/OverlayUI.uxml" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Hub/Editor/6000.2.5f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

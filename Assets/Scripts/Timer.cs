@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Timer
 {
@@ -11,17 +9,28 @@ public class Timer
     private bool finished = false;
 
     private static List<Timer> timers = new List<Timer>();
-    
-    public Timer(float time)
+
+    public Timer(float time, bool addToRegistry=true)
     {
         baseTime = time;
         timeRemaining = 0.0f;
-        timers.Add(this);
+        if (addToRegistry)
+            timers.Add(this);
     }
 
-    /**
-     * Set the timer to its base time.
-     */
+    public float getTimeRemaining()
+    {
+        return timeRemaining;
+    }
+
+    public void setTimeRemaining(float newTime)
+    {
+        timeRemaining = newTime;
+    }
+
+     /// <summary>
+     /// Set the timer to its base time.
+     /// </summary>
     public void restart()
     {
         timeRemaining = baseTime;
@@ -29,9 +38,10 @@ public class Timer
         justFinished = false;
     }
 
-    /**
-     * Decrement remaining time by Time.deltaTime.
-     */
+    /// <summary>
+    /// Decrement remaining time by Time.deltaTime and set finished if time runs out. This is the only method
+    /// that will set finished and justFinished to be true.
+    /// </summary>
     public void tick()
     {
         var nextTime = timeRemaining - Time.deltaTime;
@@ -55,18 +65,20 @@ public class Timer
     {
         timeRemaining = 0.0f;
     }
-    
-    /**
-     * Returns true if the timer has finished counting down.
-     */
+
+    /// <summary>
+    /// Returns true if the timer has finished (time remaining is 0 or less).
+    /// </summary>
+    /// <returns>Returns true if the timer has finished (time remaining is 0 or less).</returns>
     public bool isFinished()
     {
         return timeRemaining <= 0.0f;
     }
 
-    /**
-     * Returns true if the timer has just finished this frame.
-     */
+     /// <summary>
+     ///  Returns true if the timer has just finished on the most recent tick.
+     /// </summary>
+     /// <returns>If the timer has just finished on the most recent tick.</returns>
     public bool hasJustFinished()
     {
         return justFinished;
@@ -74,10 +86,14 @@ public class Timer
 
     public override string ToString()
     {
-        return "Timer(timeRemaining=" + timeRemaining + ", baseTime=" + baseTime + ", finished=" + finished + ", justFinished=" + justFinished + ")";
+        return "Timer(timeRemaining=" + timeRemaining + ", baseTime=" + baseTime + ", finished=" + finished +
+               ", justFinished=" + justFinished + ")";
     }
 
-    public static void tickAll()
+    /// <summary>
+    /// Call this method from a MonoBehaviour's Update() method to tick all registered timers.
+    /// </summary>
+    public static void tickRegistered()
     {
         foreach (var timer in timers)
         {
