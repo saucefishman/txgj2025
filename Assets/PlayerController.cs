@@ -31,9 +31,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
-        if (jumpPressed && Mathf.Abs(rb.velocity.y) < 0.01f) // simple grounded check
+        if (jumpPressed && Mathf.Abs(rb.linearVelocity.y) < 0.01f) // simple grounded check
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }

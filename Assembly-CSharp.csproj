@@ -46,7 +46,9 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.2.5f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets/InputSystem_Actions.cs" />
     <Compile Include="Assets/PlayerController.cs" />
+    <Compile Include="Assets/PlayerControls.cs" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Hub/Editor/6000.2.5f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
