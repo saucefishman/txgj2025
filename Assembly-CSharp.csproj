@@ -46,10 +46,14 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.2.5f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/WallCheck.cs" />
-    <Compile Include="Assets/GroundCheck.cs" />
-    <Compile Include="Assets/PlayerController.cs" />
-    <Compile Include="Assets/PlayerControls.cs" />
+    <Compile Include="Assets/Scripts/WallCheck.cs" />
+    <Compile Include="Assets/Scripts/Timer.cs" />
+    <Compile Include="Assets/Scripts/PlayerController.cs" />
+    <Compile Include="Assets/Scripts/PlayerControls.cs" />
+    <Compile Include="Assets/Scripts/GroundCheck.cs" />
+    <Compile Include="Assets/Scripts/CameraFollower.cs" />
+    <Compile Include="Assets/Scripts/Wall.cs" />
+    <Compile Include="Assets/Scripts/Direction.cs" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Hub/Editor/6000.2.5f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
