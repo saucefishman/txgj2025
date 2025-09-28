@@ -103,12 +103,12 @@ public class PlayerController : MonoBehaviour
         dashCooldownTimer = new Timer(dashCooldown);
         lifeTimer = new Timer(baseLifetime, addToRegistry: false);
 
-        if (overlayController == null)
+        if (overlayController is null)
         {
             Debug.LogWarning("OverlayController not set on PlayerController");
         }
 
-        if (respawnPoint == null)
+        if (respawnPoint is null)
         {
             Debug.LogWarning("Respawn point not set on PlayerController");
         }
@@ -131,7 +131,7 @@ public class PlayerController : MonoBehaviour
     // TODO: This method is 110 lines long consider killing yourself lmao?
     void Update()
     {
-        if (speaking && targetDialogueInterface != null)
+        if (speaking && targetDialogueInterface is not null)
         {
             cameraTarget.position = Vector3.Lerp(
                 transform.position,
@@ -144,7 +144,7 @@ public class PlayerController : MonoBehaviour
             cameraTarget.position = transform.position;
         }
 
-        if (interactTapped && targetDialogueInterface != null)
+        if (interactTapped && targetDialogueInterface is not null)
         {
             if (targetDialogueInterface.isInDialogue())
             {
@@ -165,7 +165,7 @@ public class PlayerController : MonoBehaviour
             return;
         
         // Move with moving platform
-        if (movingPlatform != null)
+        if (movingPlatform is not null)
         {
             var platformDelta = (Vector2)(movingPlatform.position - movingPlatformPrevPos);
             rb.position += platformDelta;
@@ -397,7 +397,7 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag(HEALTH_PACK_TAG))
         {
             var hp = other.GetComponent<HealthPack>();
-            if (hp == null)
+            if (hp is null)
             {
                 Debug.LogWarning("HealthPack object not found");
                 return;
@@ -431,14 +431,14 @@ public class PlayerController : MonoBehaviour
 
     private void maybeAttachToMovingPlatform(GameObject platform)
     {
-        if (platform.GetComponent<MovingPlatform>() == null) return;
+        if (platform.GetComponent<MovingPlatform>() is null) return;
         movingPlatform = platform.transform;
         movingPlatformPrevPos = movingPlatform.position;
     }
     
     private void detachFromMovingPlatform()
     {
-        if (movingPlatform == null) return;
+        if (movingPlatform is null) return;
         var delta = movingPlatform.position - movingPlatformPrevPos;
         rb.linearVelocity += (Vector2)(delta / Time.deltaTime);
         movingPlatform = null;
