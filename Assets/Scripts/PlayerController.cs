@@ -63,6 +63,9 @@ public class PlayerController : MonoBehaviour
 
     private bool speaking = false;
 
+    private Transform movingPlatform = null;
+    private Vector3 movingPlatformPrevPos;
+
     private Rigidbody2D rb;
     private Collider2D coll;
     private PlayerControls controls;
@@ -160,6 +163,14 @@ public class PlayerController : MonoBehaviour
 
         if (speaking)
             return;
+        
+        // Move with moving platform
+        if (movingPlatform != null)
+        {
+            var platformDelta = (Vector2)(movingPlatform.position - movingPlatformPrevPos);
+            rb.position += platformDelta;
+            movingPlatformPrevPos = movingPlatform.position;
+        }
 
         // Adjust gravity based on state
         if (onWall)
@@ -283,10 +294,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void onEnterGround()
+    public void onEnterGround(Collider2D other)
     {
         onStayGround();
         dashUsed = false;
+        maybeAttachToMovingPlatform(other.gameObject);
     }
 
     public void onStayGround()
@@ -300,6 +312,7 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = false;
         groundFoxJumpTimer.restart();
+        detachFromMovingPlatform();
     }
 
     /// <summary>
@@ -336,6 +349,7 @@ public class PlayerController : MonoBehaviour
         usedJump = false;
 
         snapToWall(collision); // set player flush against wall
+        maybeAttachToMovingPlatform(collision.gameObject);
     }
 
     void snapToWall(Collision2D collision)
@@ -375,6 +389,7 @@ public class PlayerController : MonoBehaviour
         onWall = false;
         rb.gravityScale = baseGravity;
         wallFoxJumpTimer.restart();
+        detachFromMovingPlatform();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -412,5 +427,20 @@ public class PlayerController : MonoBehaviour
         {
             targetDialogueInterface = null;
         }
+    }
+
+    private void maybeAttachToMovingPlatform(GameObject platform)
+    {
+        if (platform.GetComponent<MovingPlatform>() == null) return;
+        movingPlatform = platform.transform;
+        movingPlatformPrevPos = movingPlatform.position;
+    }
+    
+    private void detachFromMovingPlatform()
+    {
+        if (movingPlatform == null) return;
+        var delta = movingPlatform.position - movingPlatformPrevPos;
+        rb.linearVelocity += (Vector2)(delta / Time.deltaTime);
+        movingPlatform = null;
     }
 }
