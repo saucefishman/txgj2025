@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
     public AudioClip collectSound;
     public AudioClip dashSound;
     public AudioClip deathSound;
+    public AudioClip hitSound;
 
     private Direction lastDirection; // Direction player character is facing. Not necessarily aligned with input.
 
@@ -459,6 +460,7 @@ public class PlayerController : MonoBehaviour
             var damager = other.GetComponent<Damager>();
             var amount = damager.getDamageAmount();
             lifeTimer.setTimeRemaining(Math.Max(lifeTimer.getTimeRemaining() - amount, 0));
+            audioSource.PlayOneShot(hitSound);
         }
     }
 

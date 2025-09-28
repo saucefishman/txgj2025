@@ -199,6 +199,7 @@ MonoBehaviour:
   collectSound: {fileID: 8300000, guid: 963789b5df1f14cfeaef2aee173e4ad3, type: 3}
   dashSound: {fileID: 8300000, guid: 7ab451b099124408e9e0cd23a9f64e1b, type: 3}
   deathSound: {fileID: 8300000, guid: f229b6c129f6f42c0a762e2559fc23ed, type: 3}
+  hitSound: {fileID: 8300000, guid: 0d0427f02b8db4a0cbee84c38d4aed5c, type: 3}
 --- !u!95 &6240265412314113719
 Animator:
   serializedVersion: 7
