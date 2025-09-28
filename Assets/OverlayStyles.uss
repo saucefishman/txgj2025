@@ -15,7 +15,7 @@
 }
 
 #healthBar .unity-progress-bar__background {
-    background-image: url("BarBG.png");
+    background-image: url("Sprites/UI/BarBG.png");
     background-size: contain;
     background-repeat: no-repeat;
     /* maybe padding or border if you need */
