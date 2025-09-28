@@ -8,9 +8,11 @@ public class DialogueInterface : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public TextMeshProUGUI interactHintText;
     public List<string> dialogueSequence;
+    public AbilityToGive abilityToGive;
     
     private int currentIndex = 0;
     private bool inDialogue = false;
+    private PlayerController pc;
 
     public void Awake()
     {
@@ -18,8 +20,9 @@ public class DialogueInterface : MonoBehaviour
         interactHintText.enabled = false;
     }
 
-    public void startDialogue()
+    public void startDialogue(PlayerController pc)
     {
+        this.pc = pc;
         dialogueText.enabled = true;
         interactHintText.enabled = false;
         currentIndex = 0;
@@ -50,6 +53,10 @@ public class DialogueInterface : MonoBehaviour
         dialogueText.enabled = false;
         interactHintText.enabled = true;
         inDialogue = false;
+        if (abilityToGive == AbilityToGive.Dash)
+        {
+            pc?.giveDashAbility();
+        }
     }
     
     public bool isInDialogue()

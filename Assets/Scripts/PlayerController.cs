@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private Timer dashCooldownTimer;
     private bool dashUsed;
     private Direction dashDirection;
+    private bool hasDash;
 
     private bool isGrounded = false;
 
@@ -118,6 +119,7 @@ public class PlayerController : MonoBehaviour
 
         targetDialogueInterface = null;
         speaking = false;
+        hasDash = false;
     }
 
     void OnEnable() => controls.Enable();
@@ -167,7 +169,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                targetDialogueInterface.startDialogue();
+                targetDialogueInterface.startDialogue(this);
                 speaking = true;
                 rb.linearVelocity = Vector2.zero;
             }
@@ -266,7 +268,7 @@ public class PlayerController : MonoBehaviour
             jumpHoldTimer.interrupt();
         }
 
-        if (dashTapped)
+        if (dashTapped && hasDash)
         {
             if (!dashUsed && dashTimer.isFinished() && dashCooldownTimer.isFinished())
             {
@@ -278,9 +280,8 @@ public class PlayerController : MonoBehaviour
                 }
                 dashAnimation();
             }
-
-            dashTapped = false;
         }
+        dashTapped = false;
 
         if (!dashTimer.isFinished())
         {
@@ -502,5 +503,10 @@ public class PlayerController : MonoBehaviour
     private void wallAttachAnimation()
     {
         animator.SetTrigger(WALL_ATTACH_TRIGGER);
+    }
+    
+    public void giveDashAbility()
+    {
+        hasDash = true;
     }
 }
