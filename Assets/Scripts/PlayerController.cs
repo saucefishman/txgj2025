@@ -33,6 +33,11 @@ public class PlayerController : MonoBehaviour
     public Transform respawnPoint;
 
     public Transform cameraTarget;
+    
+    public AudioClip jumpSound;
+    public AudioClip collectSound;
+    public AudioClip dashSound;
+    public AudioClip deathSound;
 
     private Direction lastDirection; // Direction player character is facing. Not necessarily aligned with input.
 
@@ -69,6 +74,8 @@ public class PlayerController : MonoBehaviour
     
     private SpriteRenderer spriteRenderer; 
     private Animator animator;
+    
+    private AudioSource audioSource;
 
     private Rigidbody2D rb;
     private Collider2D coll;
@@ -131,6 +138,7 @@ public class PlayerController : MonoBehaviour
         coll = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         lifeTimer.restart();
         dying = true;
     }
@@ -236,6 +244,7 @@ public class PlayerController : MonoBehaviour
                 usedJump = true;
                 jumpHoldTimer.restart();
                 postJumpWallAttachTimer.restart();
+                audioSource.PlayOneShot(jumpSound);
             }
 
             if (canJumpFromGround)
@@ -283,6 +292,7 @@ public class PlayerController : MonoBehaviour
                 {
                     onLeaveWall();
                 }
+                audioSource.PlayOneShot(dashSound);
             }
         }
         dashTapped = false;
@@ -309,6 +319,7 @@ public class PlayerController : MonoBehaviour
             lifeTimer.tick();
             if (lifeTimer.isFinished())
             {
+                audioSource.PlayOneShot(deathSound);
                 rb.position = respawnPoint.position;
                 rb.linearVelocity = Vector2.zero;
                 lifeTimer.restart();
@@ -434,6 +445,7 @@ public class PlayerController : MonoBehaviour
 
             var amount = hp.consumeAndGetAmount();
             lifeTimer.setTimeRemaining(Math.Min(lifeTimer.getTimeRemaining() + amount, baseLifetime));
+            audioSource.PlayOneShot(collectSound);
         }
         else if (other.CompareTag(FROZEN_FIELD_TAG))
         {
