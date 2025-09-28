@@ -152,6 +152,7 @@ public class PlayerController : MonoBehaviour
             {
                 targetDialogueInterface.startDialogue();
                 speaking = true;
+                rb.linearVelocity = Vector2.zero;
             }
         }
 
