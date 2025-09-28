@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Terrain
   - HealthPack
+  - FrozenField
+  - NPC
   layers:
   - Default
   - TransparentFX

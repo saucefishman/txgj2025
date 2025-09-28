@@ -5,10 +5,13 @@ using UnityEngine.InputSystem; // new input system
 
 public class PlayerController : MonoBehaviour
 {
+    private static string HEALTH_PACK_TAG = "HealthPack";
+    private static string FROZEN_FIELD_TAG = "FrozenField";
+
     public float moveSpeed = 5f; // max horizontal speed
     public float xGroundAccel = 10f; // max horizontal acceleration on ground
     public float xAirAccel = 5f; // max horizontal acceleration in air
-    
+
     public float baseGravity = 5f; // base gravity scale
     public float additionalJumpVelocity = 10f; // fixed minimum velocity while jump is held
     public float jumpTime = 0.5f; // max time the jump can be held
@@ -17,15 +20,19 @@ public class PlayerController : MonoBehaviour
     public Vector2 wallJumpForce = new Vector2(10f, 14f); // force applied when wall jumping
     public float jumpForce = 14f; // initial jump force
     public float postJumpWallAttachDelay = 0.2f; // time after jumping to ignore wall attach attempts
-    
+
     public float dashAcceleration = 500f; // horizontal acceleration during dash
     public float dashSpeed = 20f; // max horizontal speed during dash
     public float dashDuration = 0.3f; // duration of dash
     public float dashCooldown = 0.5f; // Time after dashing before dash can be used again
-    
+
     public float baseLifetime = 60.0f;
 
     public OverlayController overlayController; // reference to overlay UI's controller
+
+    public Transform respawnPoint;
+
+    public Transform cameraTarget;
 
     private Direction lastDirection; // Direction player character is facing. Not necessarily aligned with input.
 
@@ -49,6 +56,12 @@ public class PlayerController : MonoBehaviour
     private Direction lastWallSide;
 
     private Timer lifeTimer;
+    private bool dying;
+
+    private DialogueInterface
+        targetDialogueInterface; // doesn't work when there's multiple next to each other but who cares
+
+    private bool speaking = false;
 
     private Rigidbody2D rb;
     private Collider2D coll;
@@ -57,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private bool jumpPressed;
     private bool jumpTapped;
     private bool dashTapped;
+    private bool interactTapped;
 
     void Awake()
     {
@@ -74,6 +88,30 @@ public class PlayerController : MonoBehaviour
         controls.Player.Jump.canceled += ctx => jumpPressed = false;
 
         controls.Player.Sprint.performed += ctx => dashTapped = true;
+
+        controls.Player.Interact.started += ctx => interactTapped = true;
+
+        jumpHoldTimer = new Timer(jumpTime);
+        preLandBufferTimer = new Timer(preLandBufferTime);
+        groundFoxJumpTimer = new Timer(foxJumpTimeAllowance);
+        wallFoxJumpTimer = new Timer(foxJumpTimeAllowance);
+        dashTimer = new Timer(dashDuration);
+        postJumpWallAttachTimer = new Timer(postJumpWallAttachDelay);
+        dashCooldownTimer = new Timer(dashCooldown);
+        lifeTimer = new Timer(baseLifetime, addToRegistry: false);
+
+        if (overlayController == null)
+        {
+            Debug.LogWarning("OverlayController not set on PlayerController");
+        }
+
+        if (respawnPoint == null)
+        {
+            Debug.LogWarning("Respawn point not set on PlayerController");
+        }
+
+        targetDialogueInterface = null;
+        speaking = false;
     }
 
     void OnEnable() => controls.Enable();
@@ -83,20 +121,45 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
-        jumpHoldTimer = new Timer(jumpTime);
-        preLandBufferTimer = new Timer(preLandBufferTime);
-        groundFoxJumpTimer = new Timer(foxJumpTimeAllowance);
-        wallFoxJumpTimer = new Timer(foxJumpTimeAllowance);
-        dashTimer = new Timer(dashDuration);
-        postJumpWallAttachTimer = new Timer(postJumpWallAttachDelay);
-        dashCooldownTimer = new Timer(dashCooldown);
-        lifeTimer = new Timer(baseLifetime, addToRegistry:false);
         lifeTimer.restart();
+        dying = true;
     }
 
     // TODO: This method is 110 lines long consider killing yourself lmao?
     void Update()
     {
+        if (speaking && targetDialogueInterface != null)
+        {
+            cameraTarget.position = Vector3.Lerp(
+                transform.position,
+                targetDialogueInterface.gameObject.transform.position,
+                0.5f
+            );
+        }
+        else
+        {
+            cameraTarget.position = transform.position;
+        }
+
+        if (interactTapped && targetDialogueInterface != null)
+        {
+            if (targetDialogueInterface.isInDialogue())
+            {
+                var successfullyAdvanced = targetDialogueInterface.advanceDialogue();
+                if (!successfullyAdvanced) speaking = false;
+            }
+            else
+            {
+                targetDialogueInterface.startDialogue();
+                speaking = true;
+            }
+        }
+
+        interactTapped = false;
+
+        if (speaking)
+            return;
+
         // Adjust gravity based on state
         if (onWall)
         {
@@ -137,11 +200,21 @@ public class PlayerController : MonoBehaviour
 
         if ((jumpTapped || !preLandBufferTimer.isFinished()) && !usedJump)
         {
-            if (isGrounded || !groundFoxJumpTimer.isFinished())
+            var canJumpFromGround = isGrounded || !groundFoxJumpTimer.isFinished();
+            var canJumpFromWall = onWall || !wallFoxJumpTimer.isFinished();
+
+            if (canJumpFromGround || canJumpFromWall)
+            {
+                usedJump = true;
+                jumpHoldTimer.restart();
+                postJumpWallAttachTimer.restart();
+            }
+
+            if (canJumpFromGround)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
-            else if (onWall || !wallFoxJumpTimer.isFinished())
+            else if (canJumpFromWall)
             {
                 var force = wallJumpForce;
                 if (lastWallSide == Direction.Right)
@@ -149,12 +222,9 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(force, ForceMode2D.Impulse);
                 onLeaveWall();
             }
-
-            usedJump = true;
-            jumpHoldTimer.restart();
-            jumpTapped = false;
-            postJumpWallAttachTimer.restart();
         }
+
+        jumpTapped = false;
 
         if (jumpPressed && !onWall)
         {
@@ -199,6 +269,17 @@ public class PlayerController : MonoBehaviour
         }
 
         overlayController.setHealth(lifeTimer.getTimeRemaining() / baseLifetime);
+
+        if (dying)
+        {
+            lifeTimer.tick();
+            if (lifeTimer.isFinished())
+            {
+                rb.position = respawnPoint.position;
+                rb.linearVelocity = Vector2.zero;
+                lifeTimer.restart();
+            }
+        }
 
         Timer.tickRegistered();
     }
@@ -287,7 +368,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("HealthPack"))
+        if (other.CompareTag(HEALTH_PACK_TAG))
         {
             var hp = other.GetComponent<HealthPack>();
             if (hp == null)
@@ -298,6 +379,27 @@ public class PlayerController : MonoBehaviour
 
             var amount = hp.consumeAndGetAmount();
             lifeTimer.setTimeRemaining(Math.Min(lifeTimer.getTimeRemaining() + amount, baseLifetime));
+        }
+        else if (other.CompareTag(FROZEN_FIELD_TAG))
+        {
+            dying = false;
+        }
+        else if (other.CompareTag("NPC"))
+        {
+            var otherDialogueInterface = other.GetComponent<DialogueInterface>();
+            targetDialogueInterface = otherDialogueInterface;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(FROZEN_FIELD_TAG))
+        {
+            dying = true;
+        }
+        else if (other.CompareTag("NPC"))
+        {
+            targetDialogueInterface = null;
         }
     }
 }
