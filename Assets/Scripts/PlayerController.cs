@@ -63,6 +63,9 @@ public class PlayerController : MonoBehaviour
 
     private bool speaking = false;
 
+    private Transform movingPlatform = null;
+    private Vector3 movingPlatformPrevPos;
+
     private Rigidbody2D rb;
     private Collider2D coll;
     private PlayerControls controls;
@@ -100,12 +103,12 @@ public class PlayerController : MonoBehaviour
         dashCooldownTimer = new Timer(dashCooldown);
         lifeTimer = new Timer(baseLifetime, addToRegistry: false);
 
-        if (overlayController == null)
+        if (overlayController is null)
         {
             Debug.LogWarning("OverlayController not set on PlayerController");
         }
 
-        if (respawnPoint == null)
+        if (respawnPoint is null)
         {
             Debug.LogWarning("Respawn point not set on PlayerController");
         }
@@ -128,7 +131,7 @@ public class PlayerController : MonoBehaviour
     // TODO: This method is 110 lines long consider killing yourself lmao?
     void Update()
     {
-        if (speaking && targetDialogueInterface != null)
+        if (speaking && targetDialogueInterface is not null)
         {
             cameraTarget.position = Vector3.Lerp(
                 transform.position,
@@ -141,7 +144,7 @@ public class PlayerController : MonoBehaviour
             cameraTarget.position = transform.position;
         }
 
-        if (interactTapped && targetDialogueInterface != null)
+        if (interactTapped && targetDialogueInterface is not null)
         {
             if (targetDialogueInterface.isInDialogue())
             {
@@ -160,6 +163,14 @@ public class PlayerController : MonoBehaviour
 
         if (speaking)
             return;
+        
+        // Move with moving platform
+        if (movingPlatform is not null)
+        {
+            var platformDelta = (Vector2)(movingPlatform.position - movingPlatformPrevPos);
+            rb.position += platformDelta;
+            movingPlatformPrevPos = movingPlatform.position;
+        }
 
         // Adjust gravity based on state
         if (onWall)
@@ -281,14 +292,13 @@ public class PlayerController : MonoBehaviour
                 lifeTimer.restart();
             }
         }
-
-        Timer.tickRegistered();
     }
 
-    public void onEnterGround()
+    public void onEnterGround(Collider2D other)
     {
         onStayGround();
         dashUsed = false;
+        maybeAttachToMovingPlatform(other.gameObject);
     }
 
     public void onStayGround()
@@ -302,6 +312,7 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = false;
         groundFoxJumpTimer.restart();
+        detachFromMovingPlatform();
     }
 
     /// <summary>
@@ -309,7 +320,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     /// <param name="wallDirection">The direction the wall is in relative to the player.</param>
     /// <param name="wallCollider">The collider of the wall the player touched.</param>
-    public void onEnterWall(Direction wallDirection, Collider2D wallCollider)
+    public void onEnterWall(Direction wallDirection, Collision2D collision)
     {
         // There is an intent to stick to the wall if the player is pushing towards it
         // or if the player is dashing towards it.
@@ -337,26 +348,44 @@ public class PlayerController : MonoBehaviour
         jumpHoldTimer.interrupt();
         usedJump = false;
 
-        // snapToWall(wallCollider.bounds); // set player flush against wall
+        snapToWall(collision); // set player flush against wall
+        maybeAttachToMovingPlatform(collision.gameObject);
     }
 
-    void snapToWall(Bounds wallBounds)
+    void snapToWall(Collision2D collision)
     {
         var playerBounds = coll.bounds;
         var pos = rb.position;
-        pos.x = pos.x > wallBounds.center.x
-            ? wallBounds.max.x + playerBounds.extents.x
-            : wallBounds.min.x - playerBounds.extents.x;
-        rb.position = pos;
+
+        foreach (var contact in collision.contacts)
+        {
+            var normal = contact.normal;
+
+            if (Mathf.Abs(normal.x) > 0.5f) // horizontal wall
+            {
+                // Push the player outside the wall depending on which side
+                pos.x = contact.point.x + (normal.x > 0 
+                    ? playerBounds.extents.x 
+                    : -playerBounds.extents.x);
+            
+                rb.position = pos;
+                return;
+            }
+        }
     }
 
-    public void onStayWall(Direction wallDirection, Collider2D wallCollider)
+    public void onStayWall(Direction wallDirection, Collision2D collision) 
     {
         // sometimes OnTriggerEnter2D doesn't get called, so we call onEnterWall from here too
         // TODO: that's gotta be a bug there's prob a better way to do this
         if (!onWall)
         {
-            onEnterWall(wallDirection, wallCollider);
+            onEnterWall(wallDirection, collision);
+        }
+
+        if (onWall)
+        {
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
@@ -365,6 +394,7 @@ public class PlayerController : MonoBehaviour
         onWall = false;
         rb.gravityScale = baseGravity;
         wallFoxJumpTimer.restart();
+        detachFromMovingPlatform();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -372,7 +402,7 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag(HEALTH_PACK_TAG))
         {
             var hp = other.GetComponent<HealthPack>();
-            if (hp == null)
+            if (hp is null)
             {
                 Debug.LogWarning("HealthPack object not found");
                 return;
@@ -402,5 +432,20 @@ public class PlayerController : MonoBehaviour
         {
             targetDialogueInterface = null;
         }
+    }
+
+    private void maybeAttachToMovingPlatform(GameObject platform)
+    {
+        if (platform.GetComponent<MovingPlatform>() is null) return;
+        movingPlatform = platform.transform;
+        movingPlatformPrevPos = movingPlatform.position;
+    }
+    
+    private void detachFromMovingPlatform()
+    {
+        if (movingPlatform is null) return;
+        var delta = movingPlatform.position - movingPlatformPrevPos;
+        rb.linearVelocity += (Vector2)(delta / Time.deltaTime);
+        movingPlatform = null;
     }
 }

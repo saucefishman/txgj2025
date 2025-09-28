@@ -9,7 +9,7 @@ public class GroundCheck : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag(TERRAIN_TAG))
-            player.onEnterGround();
+            player.onEnterGround(other);
     }
 
     private void OnTriggerStay2D(Collider2D other)

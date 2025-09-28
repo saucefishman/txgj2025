@@ -28,9 +28,9 @@ public class Timer
         timeRemaining = newTime;
     }
 
-     /// <summary>
-     /// Set the timer to its base time.
-     /// </summary>
+    /**
+     * Set the timer to its base time.
+     */
     public void restart()
     {
         timeRemaining = baseTime;
@@ -38,10 +38,15 @@ public class Timer
         justFinished = false;
     }
 
+    /**
+     * Decrement remaining time by Time.deltaTime and set finished if time runs out. This is the only method
+     * that will set finished and justFinished to be true.
+     */
     /// <summary>
     /// Decrement remaining time by Time.deltaTime and set finished if time runs out. This is the only method
     /// that will set finished and justFinished to be true.
     /// </summary>
+    /// 
     public void tick()
     {
         var nextTime = timeRemaining - Time.deltaTime;

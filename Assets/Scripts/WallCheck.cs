@@ -6,16 +6,16 @@ public class WallCheck : MonoBehaviour
     public Direction wallDirection;
     public PlayerController player;
     
-    void OnTriggerEnter2D(Collider2D other)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        if (other.CompareTag("Terrain"))
-            player.onEnterWall(wallDirection, other);
+        if (collision.gameObject.CompareTag("Terrain"))
+            player.onEnterWall(wallDirection, collision);
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (other.CompareTag("Terrain"))
-            player.onStayWall(wallDirection, other);
+        if (collision.gameObject.CompareTag("Terrain"))
+            player.onStayWall(wallDirection, collision);
     }
 
     void OnTriggerExit2D(Collider2D other)
