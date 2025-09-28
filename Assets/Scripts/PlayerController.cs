@@ -281,8 +281,6 @@ public class PlayerController : MonoBehaviour
                 lifeTimer.restart();
             }
         }
-
-        Timer.tickRegistered();
     }
 
     public void onEnterGround()
@@ -309,7 +307,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     /// <param name="wallDirection">The direction the wall is in relative to the player.</param>
     /// <param name="wallCollider">The collider of the wall the player touched.</param>
-    public void onEnterWall(Direction wallDirection, Collider2D wallCollider)
+    public void onEnterWall(Direction wallDirection, Collision2D collision)
     {
         // There is an intent to stick to the wall if the player is pushing towards it
         // or if the player is dashing towards it.
@@ -337,26 +335,38 @@ public class PlayerController : MonoBehaviour
         jumpHoldTimer.interrupt();
         usedJump = false;
 
-        // snapToWall(wallCollider.bounds); // set player flush against wall
+        snapToWall(collision); // set player flush against wall
     }
 
-    void snapToWall(Bounds wallBounds)
+    void snapToWall(Collision2D collision)
     {
         var playerBounds = coll.bounds;
         var pos = rb.position;
-        pos.x = pos.x > wallBounds.center.x
-            ? wallBounds.max.x + playerBounds.extents.x
-            : wallBounds.min.x - playerBounds.extents.x;
-        rb.position = pos;
+
+        foreach (var contact in collision.contacts)
+        {
+            var normal = contact.normal;
+
+            if (Mathf.Abs(normal.x) > 0.5f) // horizontal wall
+            {
+                // Push the player outside the wall depending on which side
+                pos.x = contact.point.x + (normal.x > 0 
+                    ? playerBounds.extents.x 
+                    : -playerBounds.extents.x);
+            
+                rb.position = pos;
+                return;
+            }
+        }
     }
 
-    public void onStayWall(Direction wallDirection, Collider2D wallCollider)
+    public void onStayWall(Direction wallDirection, Collision2D collision) 
     {
         // sometimes OnTriggerEnter2D doesn't get called, so we call onEnterWall from here too
         // TODO: that's gotta be a bug there's prob a better way to do this
         if (!onWall)
         {
-            onEnterWall(wallDirection, wallCollider);
+            onEnterWall(wallDirection, collision);
         }
     }
 

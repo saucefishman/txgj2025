@@ -8,6 +8,7 @@ TagManager:
   - HealthPack
   - FrozenField
   - NPC
+  - MovingTerrain
   layers:
   - Default
   - TransparentFX
