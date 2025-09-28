@@ -9,6 +9,7 @@ TagManager:
   - FrozenField
   - NPC
   - MovingTerrain
+  - Damaging
   layers:
   - Default
   - TransparentFX
