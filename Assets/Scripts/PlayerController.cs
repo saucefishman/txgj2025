@@ -279,6 +279,10 @@ public class PlayerController : MonoBehaviour
                     dashUsed = true;
                 }
                 dashAnimation();
+                if (onWall)
+                {
+                    onLeaveWall();
+                }
             }
         }
         dashTapped = false;
