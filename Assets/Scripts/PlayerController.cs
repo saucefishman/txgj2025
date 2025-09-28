@@ -337,7 +337,7 @@ public class PlayerController : MonoBehaviour
         jumpHoldTimer.interrupt();
         usedJump = false;
 
-        snapToWall(wallCollider.bounds); // set player flush against wall
+        // snapToWall(wallCollider.bounds); // set player flush against wall
     }
 
     void snapToWall(Bounds wallBounds)
