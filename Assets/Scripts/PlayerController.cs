@@ -382,6 +382,11 @@ public class PlayerController : MonoBehaviour
         {
             onEnterWall(wallDirection, collision);
         }
+
+        if (onWall)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
     }
 
     public void onLeaveWall()

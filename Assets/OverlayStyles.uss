@@ -1,3 +1,27 @@
 :root {
 
 }
+
+/*.unity-progress-bar {*/
+/*    height: 60px;*/
+/*    min-height: 60px;*/
+/*    max-height: 60px;*/
+/*}*/
+
+.unity-progress-bar__container {
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
+}
+
+#healthBar .unity-progress-bar__background {
+    background-image: url("BarBG.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    /* maybe padding or border if you need */
+}
+
+#healthBar .unity-progress-bar__progress {
+    background-color: wheat;
+    margin: 5px;
+}

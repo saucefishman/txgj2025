@@ -573,7 +573,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 866401038249994492, guid: df362b1b5044b4b74bdf2e49c4fb90af, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4.1584
+      value: 6.6447077
       objectReference: {fileID: 0}
     - target: {fileID: 866401038249994492, guid: df362b1b5044b4b74bdf2e49c4fb90af, type: 3}
       propertyPath: m_LocalPosition.x
@@ -581,7 +581,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 866401038249994492, guid: df362b1b5044b4b74bdf2e49c4fb90af, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.87
+      value: 0.6269
       objectReference: {fileID: 0}
     - target: {fileID: 866401038249994492, guid: df362b1b5044b4b74bdf2e49c4fb90af, type: 3}
       propertyPath: m_LocalPosition.z
@@ -892,9 +892,9 @@ PrefabInstance:
       propertyPath: overlayController
       value: 
       objectReference: {fileID: 1448486460}
-    - target: {fileID: 2659912707169299349, guid: d39958338ca28436295bbbbfde55f314, type: 3}
-      propertyPath: foxJumpTimeAllowance
-      value: 0.05
+    - target: {fileID: 4691392129887004337, guid: d39958338ca28436295bbbbfde55f314, type: 3}
+      propertyPath: m_Size.x
+      value: 0.61
       objectReference: {fileID: 0}
     - target: {fileID: 5883608507616311352, guid: d39958338ca28436295bbbbfde55f314, type: 3}
       propertyPath: m_LocalPosition.x

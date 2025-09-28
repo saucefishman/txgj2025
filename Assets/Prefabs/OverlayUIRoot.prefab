@@ -68,6 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de61da8cd3d8e4ee5831ee6e234bb2f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  lowHealthStart: 0.3
+  lowHealthStart: 0.5
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
-  maxLowHealthJitter: 3
+  maxLowHealthJitter: 10
