@@ -1,3 +1,31 @@
 :root {
 
 }
+
+#startButton .unity-button {
+    background-image: url("Sprites/UI/Play.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#startButton .unity-button:hover {
+}
+
+#startButton .unity-button:active {
+    background-image: url("Sprites/UI/PlayPress.png");
+}
+
+#quitButton .unity-button {
+    background-image: url("Sprites/UI/Quit.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#quitButton .unity-button:hover {
+    --unity-image-tint-color: yellow;
+}
+
+#quitButton .unity-button:active {
+    background-image: url("Sprites/UI/QuitPress.png");
+}
+

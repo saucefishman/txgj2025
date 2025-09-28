@@ -1,7 +1,5 @@
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.InputSystem; // new input system
 
 public class PlayerController : MonoBehaviour
 {
@@ -33,6 +31,11 @@ public class PlayerController : MonoBehaviour
     public Transform respawnPoint;
 
     public Transform cameraTarget;
+    
+    public AudioClip jumpSound;
+    public AudioClip collectSound;
+    public AudioClip dashSound;
+    public AudioClip deathSound;
 
     private Direction lastDirection; // Direction player character is facing. Not necessarily aligned with input.
 
@@ -49,6 +52,7 @@ public class PlayerController : MonoBehaviour
     private Timer dashCooldownTimer;
     private bool dashUsed;
     private Direction dashDirection;
+    private bool hasDash;
 
     private bool isGrounded = false;
 
@@ -65,6 +69,11 @@ public class PlayerController : MonoBehaviour
 
     private Transform movingPlatform = null;
     private Vector3 movingPlatformPrevPos;
+    
+    private SpriteRenderer spriteRenderer; 
+    private Animator animator;
+    
+    private AudioSource audioSource;
 
     private Rigidbody2D rb;
     private Collider2D coll;
@@ -115,6 +124,7 @@ public class PlayerController : MonoBehaviour
 
         targetDialogueInterface = null;
         speaking = false;
+        hasDash = false;
     }
 
     void OnEnable() => controls.Enable();
@@ -124,6 +134,9 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         lifeTimer.restart();
         dying = true;
     }
@@ -131,6 +144,15 @@ public class PlayerController : MonoBehaviour
     // TODO: This method is 110 lines long consider killing yourself lmao?
     void Update()
     {
+        updateAnimationFlags();
+        var flipSprite = lastDirection == Direction.Left;
+        // idle anim is facing wrong direction lol
+        if (animator.GetBool(IDLE_FLAG))
+        {
+            flipSprite = !flipSprite;
+        }
+        spriteRenderer.flipX = flipSprite;
+        
         if (speaking && targetDialogueInterface is not null)
         {
             cameraTarget.position = Vector3.Lerp(
@@ -153,7 +175,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                targetDialogueInterface.startDialogue();
+                targetDialogueInterface.startDialogue(this);
                 speaking = true;
                 rb.linearVelocity = Vector2.zero;
             }
@@ -220,11 +242,13 @@ public class PlayerController : MonoBehaviour
                 usedJump = true;
                 jumpHoldTimer.restart();
                 postJumpWallAttachTimer.restart();
+                audioSource.PlayOneShot(jumpSound);
             }
 
             if (canJumpFromGround)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                groundJumpAnimation();
             }
             else if (canJumpFromWall)
             {
@@ -233,6 +257,7 @@ public class PlayerController : MonoBehaviour
                     force.x = -force.x;
                 rb.AddForce(force, ForceMode2D.Impulse);
                 onLeaveWall();
+                wallJumpAnimation();
             }
         }
 
@@ -250,7 +275,7 @@ public class PlayerController : MonoBehaviour
             jumpHoldTimer.interrupt();
         }
 
-        if (dashTapped)
+        if (dashTapped && hasDash)
         {
             if (!dashUsed && dashTimer.isFinished() && dashCooldownTimer.isFinished())
             {
@@ -260,10 +285,15 @@ public class PlayerController : MonoBehaviour
                 {
                     dashUsed = true;
                 }
+                dashAnimation();
+                if (onWall)
+                {
+                    onLeaveWall();
+                }
+                audioSource.PlayOneShot(dashSound);
             }
-
-            dashTapped = false;
         }
+        dashTapped = false;
 
         if (!dashTimer.isFinished())
         {
@@ -287,6 +317,7 @@ public class PlayerController : MonoBehaviour
             lifeTimer.tick();
             if (lifeTimer.isFinished())
             {
+                audioSource.PlayOneShot(deathSound);
                 rb.position = respawnPoint.position;
                 rb.linearVelocity = Vector2.zero;
                 lifeTimer.restart();
@@ -350,6 +381,8 @@ public class PlayerController : MonoBehaviour
 
         snapToWall(collision); // set player flush against wall
         maybeAttachToMovingPlatform(collision.gameObject);
+        
+        wallAttachAnimation();
     }
 
     void snapToWall(Collision2D collision)
@@ -410,6 +443,7 @@ public class PlayerController : MonoBehaviour
 
             var amount = hp.consumeAndGetAmount();
             lifeTimer.setTimeRemaining(Math.Min(lifeTimer.getTimeRemaining() + amount, baseLifetime));
+            audioSource.PlayOneShot(collectSound);
         }
         else if (other.CompareTag(FROZEN_FIELD_TAG))
         {
@@ -447,5 +481,46 @@ public class PlayerController : MonoBehaviour
         var delta = movingPlatform.position - movingPlatformPrevPos;
         rb.linearVelocity += (Vector2)(delta / Time.deltaTime);
         movingPlatform = null;
+    }
+
+    private static string FALLING_FLAG = "isFalling";
+    private static string DASHING_TRIGGER = "dash";
+    private static string GROUND_JUMP_TRIGGER = "groundJump";
+    private static string WALL_JUMP_TRIGGER = "wallJump";
+    private static string INITIALIZED_FLAG = "exists";
+    private static string IDLE_FLAG = "isIdle";
+    private static string RUNNING_FLAG = "isRunning";
+    private static string WALL_ATTACH_TRIGGER = "wallAttach";
+    private void updateAnimationFlags()
+    {
+        animator.SetBool(INITIALIZED_FLAG, true);
+        animator.SetBool(FALLING_FLAG, rb.linearVelocity.y < 0 && !isGrounded && !onWall);
+        var running = isGrounded && !onWall && Mathf.Abs(rb.linearVelocity.x) > 0.1f && dashTimer.isFinished();
+        animator.SetBool(RUNNING_FLAG, running);
+        animator.SetBool(IDLE_FLAG, isGrounded && !onWall && dashTimer.isFinished() && !running);
+    }
+
+    private void groundJumpAnimation()
+    {
+        animator.SetTrigger(GROUND_JUMP_TRIGGER);
+    }
+    
+    private void wallJumpAnimation()
+    {
+        animator.SetTrigger(WALL_JUMP_TRIGGER);
+    }
+    private void dashAnimation()
+    {
+        animator.SetTrigger(DASHING_TRIGGER);
+    }
+
+    private void wallAttachAnimation()
+    {
+        animator.SetTrigger(WALL_ATTACH_TRIGGER);
+    }
+    
+    public void giveDashAbility()
+    {
+        hasDash = true;
     }
 }
