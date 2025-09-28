@@ -14,6 +14,7 @@ public class Timer
     {
         baseTime = time;
         timeRemaining = 0.0f;
+        finished = true;
         if (addToRegistry)
             timers.Add(this);
     }
