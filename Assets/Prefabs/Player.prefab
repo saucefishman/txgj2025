@@ -218,7 +218,7 @@ MonoBehaviour:
   additionalJumpVelocity: 11
   jumpTime: 0.15
   preLandBufferTime: 0.1
-  foxJumpTimeAllowance: 0.1
+  foxJumpTimeAllowance: 0.05
   wallJumpForce: {x: 10, y: 14}
   jumpForce: 7
   postJumpWallAttachDelay: 0.2
