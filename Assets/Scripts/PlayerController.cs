@@ -430,7 +430,7 @@ public class PlayerController : MonoBehaviour
         detachFromMovingPlatform();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void AcceptTriggerEnter(Collider2D other)
     {
         if (other.CompareTag(HEALTH_PACK_TAG))
         {
@@ -454,9 +454,15 @@ public class PlayerController : MonoBehaviour
             var otherDialogueInterface = other.GetComponent<DialogueInterface>();
             targetDialogueInterface = otherDialogueInterface;
         }
+        else if (other.CompareTag("Damaging"))
+        {
+            var damager = other.GetComponent<Damager>();
+            var amount = damager.getDamageAmount();
+            lifeTimer.setTimeRemaining(Math.Max(lifeTimer.getTimeRemaining() - amount, 0));
+        }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void AcceptTriggerExit(Collider2D other)
     {
         if (other.CompareTag(FROZEN_FIELD_TAG))
         {
