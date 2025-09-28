@@ -892,6 +892,10 @@ PrefabInstance:
       propertyPath: overlayController
       value: 
       objectReference: {fileID: 1448486460}
+    - target: {fileID: 2659912707169299349, guid: d39958338ca28436295bbbbfde55f314, type: 3}
+      propertyPath: foxJumpTimeAllowance
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 5883608507616311352, guid: d39958338ca28436295bbbbfde55f314, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.65
