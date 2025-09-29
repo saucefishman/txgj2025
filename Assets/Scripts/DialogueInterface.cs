@@ -47,7 +47,7 @@ public class DialogueInterface : MonoBehaviour
         return true;
     }
     
-    public void endDialogue()
+    public virtual void endDialogue()
     {
         dialogueText.enabled = false;
         interactHintText.enabled = true;

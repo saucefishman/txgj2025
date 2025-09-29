@@ -114,8 +114,8 @@ GameObject:
   - component: {fileID: 4114615008701264588}
   - component: {fileID: 2463003226695936754}
   - component: {fileID: 9100977605056577726}
-  - component: {fileID: 8796498541155993819}
   - component: {fileID: 3158492062834370879}
+  - component: {fileID: 4295705751591390171}
   m_Layer: 0
   m_Name: Chronos
   m_TagString: NPC
@@ -243,24 +243,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5.8, y: 6.092419}
   m_EdgeRadius: 0
---- !u!114 &8796498541155993819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4447402539641091954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d943409c251d04b8ba47ff34ff99e089, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  dialogueText: {fileID: 8115666781189197911}
-  interactHintText: {fileID: 5976669530238495526}
-  dialogueSequence:
-  - who tf is this kid
-  - get you bitchass out of my sight before i woop your ass
-  abilityToGive: 1
 --- !u!95 &3158492062834370879
 Animator:
   serializedVersion: 7
@@ -283,6 +265,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4295705751591390171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4447402539641091954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2698a5288d044aab2fcdfc991b201d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChronosDialogue
+  dialogueText: {fileID: 8115666781189197911}
+  interactHintText: {fileID: 5976669530238495526}
+  dialogueSequence:
+  - Wtf get away from me bitch
+  - Uhuhu
 --- !u!1 &8615307622678376962
 GameObject:
   m_ObjectHideFlags: 0
