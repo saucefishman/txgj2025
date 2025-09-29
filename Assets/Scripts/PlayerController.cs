@@ -106,6 +106,12 @@ public class PlayerController : MonoBehaviour
 
         controls.Player.Interact.started += ctx => interactTapped = true;
 
+        controls.Player.Crouch.performed += ctx =>
+        {
+            dying = true;
+            lifeTimer.interrupt();
+        };
+
         jumpHoldTimer = new Timer(jumpTime);
         preLandBufferTimer = new Timer(preLandBufferTime);
         groundFoxJumpTimer = new Timer(foxJumpTimeAllowance);
