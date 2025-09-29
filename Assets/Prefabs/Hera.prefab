@@ -291,9 +291,10 @@ MonoBehaviour:
   dialogueText: {fileID: 3037153589028859872}
   interactHintText: {fileID: 3549319757368181015}
   dialogueSequence:
-  - who tf is this kid
-  - get you bitchass out of my sight before i woop your ass
-  abilityToGive: 1
+  - Boy you messed up big time
+  - Go talk to yo daddy- I meant dad and figure something out
+  - He's up in the clouds above the canopy
+  - Fuck you waiting for? You think I'll stand around here all day?
 --- !u!95 &7796506242316228998
 Animator:
   serializedVersion: 7

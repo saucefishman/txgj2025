@@ -155,9 +155,14 @@ MonoBehaviour:
   dialogueText: {fileID: 6866502514774303312}
   interactHintText: {fileID: 3251607637802079069}
   dialogueSequence:
-  - who tf is this kid
-  - get you bitchass out of my sight before i woop your ass
-  abilityToGive: 1
+  - Blub.
+  - Blub glurp glub glub?
+  - BLUB
+  - BLUB BLUB BLUB BLUB
+  - BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB
+    BLUB BLUB BLUB BLUB BLUB BLUB BLUB BLUB
+  - ...
+  - glip glop. glub. glub!
 --- !u!95 &8224825498173998191
 Animator:
   serializedVersion: 7
