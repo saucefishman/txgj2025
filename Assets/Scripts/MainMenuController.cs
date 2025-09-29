@@ -10,7 +10,7 @@ public class MainMenuController : MonoBehaviour
     private static string START_BUTTON_NAME = "startButton";
     private static string QUIT_BUTTON_NAME = "quitButton";
     
-    private static string GAME_SCENE_NAME = "Game";
+    private static string GAME_SCENE_NAME = "MyLevel";
         
     void Awake()
     {
