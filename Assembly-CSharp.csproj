@@ -942,11 +942,11 @@
     <Reference Include="Unity.PlasticSCM.Editor">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Burst.Editor">
-      <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Play.Publisher.Editor">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.Play.Publisher.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Editor">
+      <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Core">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.VisualScripting.Core.dll</HintPath>
@@ -1056,14 +1056,14 @@
     <Reference Include="Unity.RenderPipelines.Universal.Config.Runtime">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Config.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
-      <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Collections.Editor">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.Collections.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ShaderGraph.Editor">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
+      <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.AIIntegration.Editor">
       <HintPath>/Users/saucefishman/My project/Library/ScriptAssemblies/Unity.2D.Sprite.AIIntegration.Editor.dll</HintPath>
