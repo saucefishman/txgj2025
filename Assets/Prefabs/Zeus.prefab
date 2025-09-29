@@ -156,8 +156,9 @@ MonoBehaviour:
   interactHintText: {fileID: 6667082140939524031}
   dialogueSequence:
   - who tf is this kid
-  - get you bitchass out of my sight before i woop your ass
-  abilityToGive: 1
+  - r u one of mine?
+  - honestly idc. take the lightning bolt if you want
+  - now get yo bitchass out of my sight before i woop your ass
 --- !u!95 &5028501572865889112
 Animator:
   serializedVersion: 7

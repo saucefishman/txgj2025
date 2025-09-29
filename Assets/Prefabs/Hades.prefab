@@ -258,8 +258,17 @@ MonoBehaviour:
   dialogueText: {fileID: 6042986391393957689}
   interactHintText: {fileID: 3999284833633519633}
   dialogueSequence:
-  - who tf is this kid
-  - get you bitchass out of my sight before i woop your ass
+  - 'YOU [[SNAKE]]'
+  - WHAT ARE YOU DOING
+  - I CAN'T BELIEVE YOU'RE HERE
+  - PHYSICALLY
+  - IN OTHER WORDS
+  - 'YOU''RE A [[SOLID SNAKE]]'
+  - What a thrill
+  - With darkness and silence through the night
+  - What a thrill
+  - (He went on like this for the rest of the song)
+  - (It was highly uncomfortable)
 --- !u!95 &98180865832706745
 Animator:
   serializedVersion: 7

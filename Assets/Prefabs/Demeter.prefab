@@ -532,9 +532,13 @@ MonoBehaviour:
   dialogueText: {fileID: 5108512272537132310}
   interactHintText: {fileID: 3012956206052516496}
   dialogueSequence:
-  - who tf is this kid
-  - get you bitchass out of my sight before i woop your ass
-  abilityToGive: 1
+  - Omaigosh hai!
+  - What're you doing up here little boy?
+  - Zeus? hes up in the clouds
+  - But I'll be your mommy if you want
+  - ...
+  - ...
+  - 'Best get going now. '
 --- !u!95 &3832738399568511775
 Animator:
   serializedVersion: 7
