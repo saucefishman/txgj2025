@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
     private Timer jumpHoldTimer; // Tracks for the duration of an extended jump
     private Timer postJumpWallAttachTimer;
 
+    private bool hasWallJump;
+
     private Timer preLandBufferTimer; // Tracks for jump input before landing
 
     private Timer groundFoxJumpTimer; // Tracks for jump input after leaving ground
@@ -125,6 +127,7 @@ public class PlayerController : MonoBehaviour
 
         targetDialogueInterface = null;
         speaking = false;
+        hasWallJump = false;
         hasDash = false;
     }
 
@@ -367,6 +370,8 @@ public class PlayerController : MonoBehaviour
         // ignore wall attach attempts for a short time after jumping
         if (!postJumpWallAttachTimer.isFinished())
             return;
+        if (!hasWallJump)
+            return;
 
         lastDirection =
             wallDirection == Direction.Left
@@ -527,8 +532,15 @@ public class PlayerController : MonoBehaviour
         animator.SetTrigger(WALL_ATTACH_TRIGGER);
     }
     
+    public void giveWallJumpAbility()
+    {
+        hasWallJump = true;
+        overlayController.displayHint("Attach to walls by jumping towards them.\nJump again to wall jump.");
+    }
+    
     public void giveDashAbility()
     {
         hasDash = true;
+        overlayController.displayHint("Press Shift to dash.\nYou can dash in midair.");
     }
 }

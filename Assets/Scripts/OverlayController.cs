@@ -7,10 +7,15 @@ public class OverlayController : MonoBehaviour
     public float lowHealthStart = 0.2f;
     public Color lowHealthColor = Color.red;
     public float maxLowHealthJitter = 5.0f; // degrees
+    public float hintShowTime = 5.0f;
     
     private static float MAX_HEALTH = 1.0f;
     private ProgressBar _healthBar;
     private VisualElement _healthBarFill;
+    
+    private Timer showHintTimer;
+    
+    private Label hintLabel;
 
     void Awake()
     {
@@ -24,6 +29,9 @@ public class OverlayController : MonoBehaviour
         _healthBar.value = MAX_HEALTH;
         
         _healthBarFill = _healthBar.Q<VisualElement>("unity-progress-bar");
+        
+        hintLabel = root.Q<Label>("hint");
+        showHintTimer = new Timer(hintShowTime);
     }
 
     private void Update()
@@ -39,6 +47,11 @@ public class OverlayController : MonoBehaviour
         {
             _healthBarFill.style.rotate = Quaternion.Euler(0, 0, 0);
         }
+
+        if (showHintTimer.isFinished())
+        {
+            hintLabel.text = "";
+        }
     }
 
     public void setHealth(float newValue)
@@ -48,5 +61,11 @@ public class OverlayController : MonoBehaviour
         {
             _healthBarFill.style.backgroundColor = Color.Lerp(lowHealthColor, Color.white, newValue / lowHealthStart);
         }
+    }
+
+    public void displayHint(string hint)
+    {
+        hintLabel.text = hint;
+        showHintTimer.restart();
     }
 }
